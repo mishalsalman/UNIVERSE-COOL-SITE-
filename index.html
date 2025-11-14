@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Universe Search PRO + Chat</title>
+<style>
+  :root{
+    --bg:#050505; --card:#0c0c0c; --neon1:#00eaff; --neon2:#8b00ff;
+    --glass: rgba(255,255,255,0.03);
+  }
+  body{
+    margin:0; background:var(--bg); color:#fff; font-family:Inter,Arial, sans-serif;
+    -webkit-font-smoothing:antialiased; text-align:center;
+  }
+  .wrap{padding:28px;}
+  h1{
+    margin:14px 0 6px; font-size:44px;
+    background:linear-gradient(90deg,var(--neon1),var(--neon2),#00ffea);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation: glow 4s infinite alternate;
+  }
+  @keyframes glow{0%{text-shadow:0 0 12px var(--neon1)}100%{text-shadow:0 0 22px var(--neon2)}}
+  p.lead{margin:6px 0 20px; color:#bfc7d3; opacity:.9}
+
+  /* search row */
+  .search-row{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap}
+  input#search{
+    width:60%; min-width:220px; padding:14px 16px; border-radius:12px;
+    border:2px solid var(--neon1); background:#0b0b0b; color:#fff; font-size:16px;
+    box-shadow:0 0 12px rgba(0,0,0,.6);
+    outline:none; transition:box-shadow .25s, transform .12s;
+  }
+  input#search:focus{box-shadow:0 0 18px rgba(0,232,255,.08); transform:translateY(-1px)}
+  button.btn{
+    padding:12px 18px; border-radius:10px; border:none; cursor:pointer;
+    background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#fff; font-weight:600;
+    box-shadow:0 6px 20px rgba(139,0,255,.08); transition:transform .12s, box-shadow .12s;
+  }
+  button.btn:hover{transform:scale(1.03); box-shadow:0 10px 28px rgba(0,232,255,.08)}
+
+  /* result card */
+  #result{
+    margin:28px auto 90px; max-width:760px; padding:20px; border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); box-shadow:0 0 30px rgba(123,0,255,0.06);
+    border:1px solid rgba(255,255,255,0.03);
+    text-align:left;
+  }
+  #result h2{margin:0 0 8px; font-size:20px}
+  #result p{color:#d3d9df; line-height:1.5}
+  #result img{max-width:300px; display:block; margin-top:12px; border-radius:10px; box-shadow:0 0 18px rgba(0,232,255,0.06)}
+
+  /* loader */
+  #loader{display:none; margin-top:12px; text-align:center}
+  .spinner{border:5px solid rgba(255,255,255,0.06); border-top:5px solid var(--neon1); border-radius:50%; width:44px; height:44px; animation:spin 1s linear infinite; margin:12px auto}
+  @keyframes spin{100%{transform:rotate(360deg)}}
+
+  /* mic */
+  #mic{cursor:pointer; font-size:22px; margin-left:6px; user-select:none; color:var(--neon1)}
+  #mic:hover{filter:drop-shadow(0 0 8px var(--neon1))}
+
+  /* chatbox (fixed bottom) */
+  .chat-wrap{
+    position:fixed; right:20px; bottom:20px; width:360px; max-width:92vw; z-index:60;
+    border-radius:14px; overflow:hidden; box-shadow:0 6px 40px rgba(0,0,0,0.6);
+    background:linear-gradient(180deg, rgba(12,12,12,0.95), rgba(6,6,6,0.95));
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .chat-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(90deg,rgba(0,232,255,0.04),rgba(139,0,255,0.04))}
+  .chat-header strong{font-size:15px}
+  .chat-body{max-height:300px; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:10px}
+  .bubble{max-width:82%; padding:10px 12px; border-radius:12px; line-height:1.4}
+  .user{align-self:flex-end; background:linear-gradient(90deg, rgba(0,232,255,0.12), rgba(139,0,255,0.12))}
+  .bot{align-self:flex-start; background:rgba(255,255,255,0.02)}
+  .chat-controls{display:flex; gap:8px; padding:10px; border-top:1px solid rgba(255,255,255,0.02)}
+  .chat-controls input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:#fff}
+  .small-btn{padding:8px 10px; border-radius:8px; border:none; background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#000; font-weight:700; cursor:pointer}
+
+  /* small neon planet animation top-left */
+  .planet{
+    position:fixed; left:18px; top:18px; width:76px; height:76px; z-index:10;
+    background: radial-gradient(circle at 35% 30%, #2fe6ff 0%, #005f8a 35%, #0b0420 100%);
+    border-radius:50%; box-shadow:0 0 30px rgba(45,200,255,0.08), inset -8px -10px 20px rgba(0,0,0,0.4);
+    animation: floaty 6s ease-in-out infinite;
+  }
+  @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+  /* responsive */
+  @media (max-width:720px){
+    input#search{width:72%}
+    .chat-wrap{right:10px; left:10px; bottom:10px}
+  }
+</style>
+</head>
+<body>
+<div class="planet" title="Universe"></div>
+
+<div class="wrap">
+  <h1>Universe Search PRO</h1>
+  <p class="lead">Type anything or tap the mic — discover images and explanations instantly.</p>
+
+  <div class="search-row">
+    <input id="search" type="text" placeholder="Example: pen, tiger, moon, guitar..." />
+    <button class="btn" onclick="playClick(); searchItem()">Search</button>
+    <div id="mic" title="Voice search" onclick="startVoice()">🎤</div>
+  </div>
+
+  <div id="loader"><div class="spinner"></div><div style="color:#bfc7d3">Searching the universe...</div></div>
+
+  <div id="result" aria-live="polite" role="region"></div>
+</div>
+
+<!-- Click sound (hosted public free sound) -->
+<audio id="clickSound" preload="auto">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a383f0cd04.mp3?filename=click-124467.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Chatbox -->
+<div class="chat-wrap" id="chatWrap" aria-hidden="false">
+  <div class="chat-header">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));">
+      <circle cx="12" cy="12" r="10" stroke="url(#g)" stroke-width="0.8" fill="url(#g2)"/>
+    </svg>
+    <strong>Universe Assistant</strong>
+    <div style="flex:1"></div>
+    <button class="small-btn" onclick="clearChat()" title="Clear chat">Clear</button>
+  </div>
+  <div class="chat-body" id="chatBody" role="log" aria-live="polite"></div>
+  <div class="chat-controls">
+    <input id="chatInput" placeholder="Ask me about anything (e.g. 'Tell me about the moon')" />
+    <button class="small-btn" onclick="sendChat()">Ask</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Utilities ---------- */
+function playClick(){ try{ document.getElementById('clickSound').currentTime=0; document.getElementById('clickSound').play(); }catch(e){} }
+function showLoader(on){ document.getElementById('loader').style.display = on ? 'block' : 'none'; }
+
+/* ---------- Main search (single-shot) ---------- */
+async function searchItem(){
+  const qEl = document.getElementById('search');
+  const q = (qEl.value || '').trim();
+  const out = document.getElementById('result');
+  if(!q){ out.innerHTML = '<p style="color:#f3b1b1">Please type something to search.</p>'; return; }
+  showLoader(true); out.innerHTML = '';
+  try{
+    // Wikipedia summary
+    const wikiRes = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q));
+    const wiki = await wikiRes.json();
+
+    const title = wiki.title || 'Not found';
+    const extract = wiki.extract || 'No explanation available.';
+    const thumb = (wiki.thumbnail && wiki.thumbnail.source) ? wiki.thumbnail.source : '';
+
+    showLoader(false);
+    out.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(extract)}</p>${thumb ? `<img src="${thumb}" alt="${escapeHtml(title)}">` : '<p style="color:#bfc7d3">No image available.</p>'}`;
+    // add to chat history as context
+    addBotMessage(`Search result for "${q}": ${extract.substring(0,400)}${extract.length>400?'...':''}`);
+  }catch(err){
+    showLoader(false);
+    out.innerHTML = '<p style="color:#f3b1b1">Error fetching info. Try another word.</p>';
+    console.error(err);
+  }
+}
+
+/* ---------- Voice search ---------- */
+function startVoice(){
+  playClick();
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRec){ alert('Voice search unavailable on this browser.'); return; }
+  const recog = new SpeechRec();
+  recog.lang = 'en-US'; recog.interimResults = false; recog.maxAlternatives = 1;
+  recog.onresult = (ev) => {
+    const text = ev.results[0][0].transcript;
+    document.getElementById('search').value = text;
+    searchItem();
+  };
+  recog.onerror = (e)=>{ console.log('voice error', e); alert('Voice error: ' + (e.error||'unknown')); };
+  recog.start();
+}
+
+/* ---------- Simple Chatbot (uses Wikipedia) ---------- */
+const chatBody = document.getElementById('chatBody');
+let chatHistory = []; // {who:'user'|'bot', text: '...'}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])) }
+
+function appendBubble(who, text){
+  const div = document.createElement('div');
+  div.className = 'bubble ' + (who==='user' ? 'user' : 'bot');
+  div.innerHTML = escapeHtml(text);
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function addBotMessage(text){ chatHistory.push({who:'bot', text}); appendBubble('bot', text); }
+function addUserMessage(text){ chatHistory.push({who:'user', text}); appendBubble('user', text); }
+
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const q = (input.value || '').trim();
+  if(!q) return;
+  addUserMessage(q);
+  input.value = '';
+  addBotMessage('Thinking...');
+
+  try{
+    // Try direct Wikipedia summary for the query
+    const wikiRes = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q));
+    const wiki = await wikiRes.json();
+
+    // remove the 'Thinking...' placeholder
+    chatBody.querySelectorAll('.bot').forEach(n=>{ if(n.innerText==='Thinking...') n.remove(); });
+
+    if(wiki.extract){
+      const answer = `${wiki.title}: ${wiki.extract}`;
+      addBotMessage(answer);
+    } else {
+      addBotMessage('I could not find a Wikipedia summary for that. Try a different phrase or a more general term.');
+    }
+  }catch(e){
+    // fallback: attempt a short reply using last search context
+    chatBody.querySelectorAll('.bot').forEach(n=>{ if(n.innerText==='Thinking...') n.remove(); });
+    // derive context from last main search result (if any)
+    const mainResult = document.querySelector('#result p') ? document.querySelector('#result p').innerText : '';
+    if(mainResult){
+      addBotMessage('I had trouble reaching the wiki service—here is what I recently found: ' + (mainResult.substring(0,300)) );
+    } else {
+      addBotMessage('Sorry — network or service error. Try again in a bit or try a different question.');
+    }
+    console.error(e);
+  }
+}
+
+function clearChat(){ chatHistory = []; chatBody.innerHTML = ''; addBotMessage('Hello! Ask me anything about the universe. Try: "What is a pen?"'); }
+
+// initialize
+clearChat();
+
+/* ---------- small helper: pressing Enter in chat/input ---------- */
+document.getElementById('chatInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); sendChat(); }});
+document.getElementById('search').addEventListener('keydown', function(e){ if(e.key==='Enter'){ playClick(); searchItem(); }});
+</script>
+</body>
+</html>
