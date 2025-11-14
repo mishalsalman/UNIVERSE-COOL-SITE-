@@ -1,246 +1,427 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Universe Search PRO + Chat</title>
+<title>UNIVERSE COOL SITE — Ultra (Dark Futuristic)</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
 <style>
   :root{
-    --bg:#050505; --card:#0c0c0c; --neon1:#00eaff; --neon2:#8b00ff;
+    --bg:#05050a; --card:#0e0e14; --muted:#9fb0c6;
+    --neon1:#00eaff; --neon2:#7a00ff; --accent:#00ffd5;
     --glass: rgba(255,255,255,0.03);
   }
+  *{box-sizing:border-box}
   body{
-    margin:0; background:var(--bg); color:#fff; font-family:Inter,Arial, sans-serif;
-    -webkit-font-smoothing:antialiased; text-align:center;
+    margin:0; min-height:100vh; background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(0,232,255,0.03), transparent),
+      radial-gradient(800px 400px at 90% 90%, rgba(122,0,255,0.03), transparent),
+      var(--bg);
+    color:#e6f3ff; font-family:Inter,ui-sans-serif,system-ui,Arial,Helvetica;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    display:flex; flex-direction:column; align-items:center; padding:28px;
   }
-  .wrap{padding:28px;}
-  h1{
-    margin:14px 0 6px; font-size:44px;
-    background:linear-gradient(90deg,var(--neon1),var(--neon2),#00ffea);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    animation: glow 4s infinite alternate;
-  }
-  @keyframes glow{0%{text-shadow:0 0 12px var(--neon1)}100%{text-shadow:0 0 22px var(--neon2)}}
-  p.lead{margin:6px 0 20px; color:#bfc7d3; opacity:.9}
 
-  /* search row */
-  .search-row{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap}
-  input#search{
-    width:60%; min-width:220px; padding:14px 16px; border-radius:12px;
-    border:2px solid var(--neon1); background:#0b0b0b; color:#fff; font-size:16px;
-    box-shadow:0 0 12px rgba(0,0,0,.6);
-    outline:none; transition:box-shadow .25s, transform .12s;
+  header{width:100%; max-width:1100px; display:flex; gap:16px; align-items:center}
+  .logo{
+    display:flex; align-items:center; gap:12px; margin-bottom:6px; cursor:default;
   }
-  input#search:focus{box-shadow:0 0 18px rgba(0,232,255,.08); transform:translateY(-1px)}
-  button.btn{
-    padding:12px 18px; border-radius:10px; border:none; cursor:pointer;
-    background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#fff; font-weight:600;
-    box-shadow:0 6px 20px rgba(139,0,255,.08); transition:transform .12s, box-shadow .12s;
+  .badge{
+    width:58px; height:58px; border-radius:14px;
+    background: conic-gradient(from 40deg,#00eaff, #7a00ff, #00ffd5, #00eaff);
+    box-shadow: 0 8px 30px rgba(122,0,255,0.12), inset 0 -6px 18px rgba(0,0,0,0.4);
+    display:flex; align-items:center; justify-content:center; color:#02020a; font-weight:700;
+    font-size:20px;
   }
-  button.btn:hover{transform:scale(1.03); box-shadow:0 10px 28px rgba(0,232,255,.08)}
+  h1{margin:0; font-size:22px; letter-spacing:0.6px; background:linear-gradient(90deg,var(--neon1),var(--neon2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+  p.lead{margin:6px 0 18px; color:var(--muted); font-size:13px}
 
-  /* result card */
-  #result{
-    margin:28px auto 90px; max-width:760px; padding:20px; border-radius:14px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); box-shadow:0 0 30px rgba(123,0,255,0.06);
-    border:1px solid rgba(255,255,255,0.03);
-    text-align:left;
+  .search-row{width:100%; max-width:1100px; display:flex; gap:12px; align-items:center; margin-top:18px}
+  .search {
+    flex:1; display:flex; gap:10px; align-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    padding:12px; border-radius:14px; border:1px solid rgba(130,130,140,0.06); box-shadow: 0 8px 30px rgba(0,0,0,0.5);
   }
-  #result h2{margin:0 0 8px; font-size:20px}
-  #result p{color:#d3d9df; line-height:1.5}
-  #result img{max-width:300px; display:block; margin-top:12px; border-radius:10px; box-shadow:0 0 18px rgba(0,232,255,0.06)}
+  input#q{flex:1; background:transparent; border:none; outline:none; color:#dff6ff; font-size:16px; padding:8px}
+  .btn {
+    padding:10px 14px; border-radius:10px; border:none; cursor:pointer;
+    background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#02020a; font-weight:700;
+    box-shadow:0 8px 30px rgba(122,0,255,0.08);
+  }
+  .mic {font-size:20px; cursor:pointer; color:var(--neon1); user-select:none}
+  .mic:hover{filter:drop-shadow(0 0 10px var(--neon1))}
+
+  main{width:100%; max-width:1100px; margin-top:22px; display:grid; grid-template-columns: 420px 1fr; gap:20px}
+  /* left column: card */
+  .card {background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); border-radius:14px; padding:16px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 30px rgba(122,0,255,0.04)}
+  .result-title {display:flex; gap:12px; align-items:center}
+  .thumb{width:110px; height:110px; border-radius:10px; object-fit:cover; box-shadow:0 8px 30px rgba(0,232,255,0.06)}
+  .meta {font-size:13px; color:var(--muted)}
+  .facts {display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+  .fact {background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; font-size:13px; color:#bfeeff}
+
+  /* right column: long extract + related */
+  .panel {background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:14px; padding:18px; border:1px solid rgba(255,255,255,0.03); color:#eaf8ff}
+  .panel h2 {margin:0 0 8px}
+  .panel p{color:#d9eef7; line-height:1.6}
+  .related {margin-top:14px; display:flex; gap:8px; flex-wrap:wrap}
+  .chip {padding:8px 10px; border-radius:12px; background:rgba(255,255,255,0.02); color:var(--muted); font-size:13px; cursor:pointer; border:1px solid rgba(255,255,255,0.02)}
+  .chip:hover{box-shadow:0 6px 18px rgba(122,0,255,0.04); transform:translateY(-3px)}
+
+  /* helper row */
+  .actions {display:flex; gap:10px; margin-top:12px; align-items:center}
+  a.ref {color:var(--accent); text-decoration:none; font-weight:700}
+  .small {font-size:13px; color:var(--muted)}
 
   /* loader */
-  #loader{display:none; margin-top:12px; text-align:center}
-  .spinner{border:5px solid rgba(255,255,255,0.06); border-top:5px solid var(--neon1); border-radius:50%; width:44px; height:44px; animation:spin 1s linear infinite; margin:12px auto}
-  @keyframes spin{100%{transform:rotate(360deg)}}
-
-  /* mic */
-  #mic{cursor:pointer; font-size:22px; margin-left:6px; user-select:none; color:var(--neon1)}
-  #mic:hover{filter:drop-shadow(0 0 8px var(--neon1))}
-
-  /* chatbox (fixed bottom) */
-  .chat-wrap{
-    position:fixed; right:20px; bottom:20px; width:360px; max-width:92vw; z-index:60;
-    border-radius:14px; overflow:hidden; box-shadow:0 6px 40px rgba(0,0,0,0.6);
-    background:linear-gradient(180deg, rgba(12,12,12,0.95), rgba(6,6,6,0.95));
-    border:1px solid rgba(255,255,255,0.03);
-  }
-  .chat-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(90deg,rgba(0,232,255,0.04),rgba(139,0,255,0.04))}
-  .chat-header strong{font-size:15px}
-  .chat-body{max-height:300px; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:10px}
-  .bubble{max-width:82%; padding:10px 12px; border-radius:12px; line-height:1.4}
-  .user{align-self:flex-end; background:linear-gradient(90deg, rgba(0,232,255,0.12), rgba(139,0,255,0.12))}
-  .bot{align-self:flex-start; background:rgba(255,255,255,0.02)}
-  .chat-controls{display:flex; gap:8px; padding:10px; border-top:1px solid rgba(255,255,255,0.02)}
-  .chat-controls input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:#fff}
-  .small-btn{padding:8px 10px; border-radius:8px; border:none; background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#000; font-weight:700; cursor:pointer}
-
-  /* small neon planet animation top-left */
-  .planet{
-    position:fixed; left:18px; top:18px; width:76px; height:76px; z-index:10;
-    background: radial-gradient(circle at 35% 30%, #2fe6ff 0%, #005f8a 35%, #0b0420 100%);
-    border-radius:50%; box-shadow:0 0 30px rgba(45,200,255,0.08), inset -8px -10px 20px rgba(0,0,0,0.4);
-    animation: floaty 6s ease-in-out infinite;
-  }
-  @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+  #loader{display:none; text-align:center; padding:10px}
+  .spinner{width:42px; height:42px; margin:auto; border-radius:50%; border:5px solid rgba(255,255,255,0.04); border-top:5px solid var(--neon1); animation:rot 1s linear infinite}
+  @keyframes rot{100%{transform:rotate(360deg)}}
 
   /* responsive */
-  @media (max-width:720px){
-    input#search{width:72%}
-    .chat-wrap{right:10px; left:10px; bottom:10px}
+  @media (max-width:980px){
+    main{grid-template-columns: 1fr; padding-bottom:90px}
+    .thumb{width:100%; height:220px}
   }
+
+  /* chat / assistant card (floating) */
+  .assist {
+    position:fixed; right:18px; bottom:18px; width:360px; max-width:92vw; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.03);
+    background:linear-gradient(180deg, rgba(10,10,12,0.95), rgba(6,6,8,0.95)); box-shadow:0 10px 60px rgba(0,0,0,0.6);
+  }
+  .assist .head {padding:10px 12px; display:flex; gap:8px; align-items:center; background:linear-gradient(90deg, rgba(0,232,255,0.03), rgba(122,0,255,0.03))}
+  .assist .body {padding:10px; max-height:260px; overflow:auto}
+  .bubble {padding:8px 10px; border-radius:10px; margin-bottom:8px}
+  .bubble.user{background:linear-gradient(90deg, rgba(0,232,255,0.08), rgba(122,0,255,0.08)); text-align:right}
+  .bubble.bot{background:rgba(255,255,255,0.02)}
+  .assist .controls {display:flex; gap:8px; padding:10px; border-top:1px solid rgba(255,255,255,0.02)}
+  .assist input{flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:#dff6ff}
+  .assist .ask{padding:8px 10px; border-radius:8px; border:none; background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#02020a; font-weight:700}
 </style>
 </head>
 <body>
-<div class="planet" title="Universe"></div>
 
-<div class="wrap">
-  <h1>Universe Search PRO</h1>
-  <p class="lead">Type anything or tap the mic — discover images and explanations instantly.</p>
+<header>
+  <div class="logo">
+    <div class="badge">UC</div>
+    <div>
+      <h1>UNIVERSE COOL SITE — Ultra</h1>
+      <div style="display:flex; gap:10px; align-items:center"><p class="small" style="margin:0; color:var(--muted)">Search anything — brands, companies, objects, planets</p></div>
+    </div>
+  </div>
+</header>
 
-  <div class="search-row">
-    <input id="search" type="text" placeholder="Example: pen, tiger, moon, guitar..." />
-    <button class="btn" onclick="playClick(); searchItem()">Search</button>
-    <div id="mic" title="Voice search" onclick="startVoice()">🎤</div>
+<section class="search-row">
+  <div class="search">
+    <input id="q" placeholder="Try: jbl, jbl speaker, apple, moon, pen, toyota..." autocomplete="off" />
+    <button class="btn" id="searchBtn" title="Search">Search</button>
+    <div style="display:flex;align-items:center;margin-left:8px">
+      <div class="mic" id="micBtn" title="Voice search">🎙️</div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="card" id="leftCard">
+    <div id="loader"><div class="spinner"></div><div class="small" style="margin-top:8px;color:var(--muted)">Searching the universe...</div></div>
+
+    <div id="resultCard" style="display:none">
+      <div class="result-title">
+        <img id="thumb" class="thumb" src="" alt="" onerror="this.style.display='none'">
+        <div>
+          <div id="title" style="font-size:18px;font-weight:700"></div>
+          <div class="meta small" id="descShort"></div>
+          <div class="facts" id="facts"></div>
+          <div class="actions" style="margin-top:8px">
+            <a id="wikiLink" class="ref" target="_blank" rel="noopener">Open on Wikipedia ↗</a>
+            <div style="flex:1"></div>
+            <button class="btn" id="companyBtn" title="Try company/brand info" style="padding:8px 10px;font-size:13px">Brand Info</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="noResult" style="display:none; padding:10px; color:#f7b3b3">No results found. Try a different word.</div>
   </div>
 
-  <div id="loader"><div class="spinner"></div><div style="color:#bfc7d3">Searching the universe...</div></div>
+  <div class="panel" id="rightPanel" style="display:none">
+    <h2 id="longTitle"></h2>
+    <p id="longExtract"></p>
 
-  <div id="result" aria-live="polite" role="region"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="small" id="typeLabel"></div>
+      <div class="small" id="pageStats"></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Related & quick searches</div>
+      <div class="related" id="related"></div>
+    </div>
+  </div>
+</main>
+
+<!-- floating assistant -->
+<div class="assist" id="assist">
+  <div class="head"><strong>Universe Assistant</strong><div style="flex:1"></div><button class="small" onclick="clearAssist()" style="background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:6px;border-radius:8px">Clear</button></div>
+  <div class="body" id="assistBody"></div>
+  <div class="controls">
+    <input id="assistInput" placeholder="Ask follow-up (eg. 'When was it founded?')" />
+    <button class="ask" id="assistAsk">Ask</button>
+  </div>
 </div>
 
-<!-- Click sound (hosted public free sound) -->
-<audio id="clickSound" preload="auto">
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a383f0cd04.mp3?filename=click-124467.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Chatbox -->
-<div class="chat-wrap" id="chatWrap" aria-hidden="false">
-  <div class="chat-header">
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));">
-      <circle cx="12" cy="12" r="10" stroke="url(#g)" stroke-width="0.8" fill="url(#g2)"/>
-    </svg>
-    <strong>Universe Assistant</strong>
-    <div style="flex:1"></div>
-    <button class="small-btn" onclick="clearChat()" title="Clear chat">Clear</button>
-  </div>
-  <div class="chat-body" id="chatBody" role="log" aria-live="polite"></div>
-  <div class="chat-controls">
-    <input id="chatInput" placeholder="Ask me about anything (e.g. 'Tell me about the moon')" />
-    <button class="small-btn" onclick="sendChat()">Ask</button>
-  </div>
-</div>
+<!-- click sound -->
+<audio id="clickAudio" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a383f0cd04.mp3?filename=click-124467.mp3" type="audio/mpeg"></audio>
 
 <script>
-/* ---------- Utilities ---------- */
-function playClick(){ try{ document.getElementById('clickSound').currentTime=0; document.getElementById('clickSound').play(); }catch(e){} }
+/* ------------- Utilities ------------- */
+const clickAudio = document.getElementById('clickAudio');
+function playClick(){ try{ clickAudio.currentTime = 0; clickAudio.play(); }catch(e){} }
 function showLoader(on){ document.getElementById('loader').style.display = on ? 'block' : 'none'; }
+function hideAllResults(){ document.getElementById('resultCard').style.display='none'; document.getElementById('rightPanel').style.display='none'; document.getElementById('noResult').style.display='none'; }
 
-/* ---------- Main search (single-shot) ---------- */
-async function searchItem(){
-  const qEl = document.getElementById('search');
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+/* ------------- Search logic (Wikipedia + fallback) ------------- */
+const qEl = document.getElementById('q');
+const searchBtn = document.getElementById('searchBtn');
+const micBtn = document.getElementById('micBtn');
+
+searchBtn.addEventListener('click', () => { playClick(); runSearch(); });
+qEl.addEventListener('keydown', e => { if(e.key === 'Enter'){ playClick(); runSearch(); } });
+
+micBtn.addEventListener('click', () => {
+  playClick();
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('Voice not supported in this browser.'); return; }
+  const r = new SR(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1;
+  r.onresult = ev => { qEl.value = ev.results[0][0].transcript; runSearch(); };
+  r.onerror = ()=>{ alert('Voice recognition error'); };
+  r.start();
+});
+
+async function runSearch(){
   const q = (qEl.value || '').trim();
-  const out = document.getElementById('result');
-  if(!q){ out.innerHTML = '<p style="color:#f3b1b1">Please type something to search.</p>'; return; }
-  showLoader(true); out.innerHTML = '';
+  if(!q){ alert('Type something to search'); return; }
+
+  hideAllResults();
+  showLoader(true);
+  playClick();
+
+  // try Wikipedia summary first (REST)
   try{
-    // Wikipedia summary
-    const wikiRes = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q));
-    const wiki = await wikiRes.json();
+    const sumResp = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q));
+    const summary = await sumResp.json();
 
-    const title = wiki.title || 'Not found';
-    const extract = wiki.extract || 'No explanation available.';
-    const thumb = (wiki.thumbnail && wiki.thumbnail.source) ? wiki.thumbnail.source : '';
-
-    showLoader(false);
-    out.innerHTML = `<h2>${escapeHtml(title)}</h2><p>${escapeHtml(extract)}</p>${thumb ? `<img src="${thumb}" alt="${escapeHtml(title)}">` : '<p style="color:#bfc7d3">No image available.</p>'}`;
-    // add to chat history as context
-    addBotMessage(`Search result for "${q}": ${extract.substring(0,400)}${extract.length>400?'...':''}`);
+    // If page not found, summary may be an error object
+    if(summary.type === 'disambiguation' || summary.title){
+      // display result
+      displaySummary(summary);
+      // now fetch extra details: categories + related
+      fetchExtra(summary);
+      return;
+    } else {
+      // fallback to search API if not found
+      const searchResp = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(q) + '&format=json&origin=*');
+      const sjson = await searchResp.json();
+      if(sjson.query && sjson.query.search && sjson.query.search.length){
+        const first = sjson.query.search[0].title;
+        const sum2 = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(first)).then(r=>r.json());
+        displaySummary(sum2);
+        fetchExtra(sum2);
+        return;
+      } else {
+        // try DuckDuckGo instant answer for description
+        const dd = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_redirect=1&no_html=1');
+        const ddj = await dd.json();
+        if(ddj.AbstractText){
+          displayFallback(q, ddj);
+          showLoader(false);
+          return;
+        }
+        throw new Error('not found');
+      }
+    }
   }catch(err){
+    console.error('search err', err);
     showLoader(false);
-    out.innerHTML = '<p style="color:#f3b1b1">Error fetching info. Try another word.</p>';
-    console.error(err);
+    document.getElementById('noResult').style.display='block';
   }
 }
 
-/* ---------- Voice search ---------- */
-function startVoice(){
-  playClick();
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRec){ alert('Voice search unavailable on this browser.'); return; }
-  const recog = new SpeechRec();
-  recog.lang = 'en-US'; recog.interimResults = false; recog.maxAlternatives = 1;
-  recog.onresult = (ev) => {
-    const text = ev.results[0][0].transcript;
-    document.getElementById('search').value = text;
-    searchItem();
-  };
-  recog.onerror = (e)=>{ console.log('voice error', e); alert('Voice error: ' + (e.error||'unknown')); };
-  recog.start();
+/* ------------- Display helpers ------------- */
+function displaySummary(summary){
+  showLoader(false);
+  document.getElementById('resultCard').style.display = 'block';
+  document.getElementById('rightPanel').style.display = 'block';
+
+  const title = summary.title || summary.displaytitle || 'Unknown';
+  const desc = summary.description || '';
+  const extract = summary.extract || '';
+  const thumb = (summary.thumbnail && summary.thumbnail.source) ? summary.thumbnail.source : '';
+
+  document.getElementById('title').innerHTML = escapeHtml(title);
+  document.getElementById('descShort').innerHTML = escapeHtml(desc);
+  document.getElementById('longTitle').innerHTML = escapeHtml(title);
+  document.getElementById('longExtract').innerHTML = escapeHtml(extract);
+  document.getElementById('wikiLink').href = summary.content_urls ? summary.content_urls.desktop.page : ('https://en.wikipedia.org/wiki/' + encodeURIComponent(summary.title || ''));
+
+  // thumb
+  const thumbEl = document.getElementById('thumb');
+  if(thumb){
+    thumbEl.src = thumb; thumbEl.style.display = 'block';
+  } else {
+    thumbEl.style.display = 'none';
+    // try duckduckgo image quick fetch as fallback
+    fetchDuckImage(summary.title || qEl.value).then(url => { if(url) { thumbEl.src = url; thumbEl.style.display='block'; } });
+  }
+
+  // reset facts + related
+  document.getElementById('facts').innerHTML = '';
+  document.getElementById('related').innerHTML = '';
+  document.getElementById('typeLabel').innerText = '';
+  document.getElementById('pageStats').innerText = '';
+  addAssistBot(`Search: "${title}" — showing summary and quick facts.`);
 }
 
-/* ---------- Simple Chatbot (uses Wikipedia) ---------- */
-const chatBody = document.getElementById('chatBody');
-let chatHistory = []; // {who:'user'|'bot', text: '...'}
-
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])) }
-
-function appendBubble(who, text){
-  const div = document.createElement('div');
-  div.className = 'bubble ' + (who==='user' ? 'user' : 'bot');
-  div.innerHTML = escapeHtml(text);
-  chatBody.appendChild(div);
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-function addBotMessage(text){ chatHistory.push({who:'bot', text}); appendBubble('bot', text); }
-function addUserMessage(text){ chatHistory.push({who:'user', text}); appendBubble('user', text); }
-
-async function sendChat(){
-  const input = document.getElementById('chatInput');
-  const q = (input.value || '').trim();
-  if(!q) return;
-  addUserMessage(q);
-  input.value = '';
-  addBotMessage('Thinking...');
-
+async function fetchExtra(summary){
   try{
-    // Try direct Wikipedia summary for the query
-    const wikiRes = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q));
-    const wiki = await wikiRes.json();
+    const title = summary.title;
+    // categories, page info
+    const api = 'https://en.wikipedia.org/w/api.php?action=query&prop=categories|pageprops|info&titles=' + encodeURIComponent(title) + '&format=json&cllimit=10&origin=*';
+    const res = await fetch(api);
+    const j = await res.json();
+    const page = Object.values(j.query.pages)[0];
 
-    // remove the 'Thinking...' placeholder
-    chatBody.querySelectorAll('.bot').forEach(n=>{ if(n.innerText==='Thinking...') n.remove(); });
-
-    if(wiki.extract){
-      const answer = `${wiki.title}: ${wiki.extract}`;
-      addBotMessage(answer);
+    // categories
+    const cats = (page.categories || []).map(c => c.title.replace('Category:',''));
+    const factsEl = document.getElementById('facts');
+    factsEl.innerHTML = '';
+    if(cats.length){
+      // show top categories as quick facts (first 4)
+      cats.slice(0,6).forEach(c => {
+        const el = document.createElement('div'); el.className = 'fact'; el.innerText = c; factsEl.appendChild(el);
+      });
+      document.getElementById('typeLabel').innerText = 'Inferred categories: ' + cats.slice(0,3).join(', ');
     } else {
-      addBotMessage('I could not find a Wikipedia summary for that. Try a different phrase or a more general term.');
+      document.getElementById('typeLabel').innerText = '';
+    }
+
+    // page stats
+    if(page.length) document.getElementById('pageStats').innerText = 'Length: ' + page.length;
+    // related searches: use opensearch
+    const op = await fetch('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(title) + '&limit=8&namespace=0&format=json&origin=*').then(r=>r.json());
+    const related = op[1] || [];
+    const relatedEl = document.getElementById('related');
+    related.forEach(r => {
+      const c = document.createElement('div'); c.className = 'chip'; c.innerText = r;
+      c.onclick = () => { qEl.value = r; runSearch(); };
+      relatedEl.appendChild(c);
+    });
+
+  }catch(e){
+    console.error('fetchExtra err', e);
+  }
+}
+
+/* fallback display for DuckDuckGo */
+function displayFallback(q, dd){
+  showLoader(false);
+  document.getElementById('resultCard').style.display='block';
+  document.getElementById('rightPanel').style.display='block';
+  document.getElementById('title').innerText = q;
+  document.getElementById('descShort').innerText = dd.Heading || '';
+  document.getElementById('longTitle').innerText = q;
+  document.getElementById('longExtract').innerText = dd.AbstractText || 'No long description available.';
+  document.getElementById('wikiLink').href = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+  addAssistBot('Used DuckDuckGo fallback for: ' + q);
+}
+
+/* DuckDuckGo image quick helper */
+async function fetchDuckImage(query){
+  try{
+    const dd = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&no_html=1').then(r=>r.json());
+    if(dd && dd.Image) return dd.Image;
+  }catch(e){}
+  return null;
+}
+
+/* ------------- Company / Brand button ------------- */
+document.getElementById('companyBtn').addEventListener('click', async () => {
+  const q = (qEl.value || '').trim(); if(!q) return;
+  addAssistUser('Show company/brand info for: ' + q);
+  showLoader(true);
+  try{
+    // try searching for "[q] (company)" then "[q] (brand)" to find corporate pages
+    const trial = [q + ' (company)', q + ' (brand)', q + ' (company) ' , q];
+    let found = null;
+    for(const t of trial){
+      const resp = await fetch('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(t) + '&limit=1&namespace=0&format=json&origin=*').then(r=>r.json());
+      if(resp && resp[1] && resp[1][0]){ found = resp[1][0]; break; }
+    }
+    if(!found){ // try search API
+      const s = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(q) + '&format=json&origin=*').then(r=>r.json());
+      if(s.query && s.query.search && s.query.search[0]) found = s.query.search[0].title;
+    }
+
+    if(!found){ showLoader(false); alert('Company/brand page not found on Wikipedia.'); return; }
+
+    // fetch summary of found
+    const summary = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(found)).then(r=>r.json());
+    displaySummary(summary);
+    await fetchExtra(summary);
+    addAssistBot('Displayed brand/company page: ' + (summary.title || found));
+  }catch(e){
+    console.error(e); showLoader(false); alert('Error fetching company info.');
+  }
+});
+
+/* ------------- Assistant (floating) ------------- */
+const assistBody = document.getElementById('assistBody');
+const assistInput = document.getElementById('assistInput');
+document.getElementById('assistAsk').addEventListener('click', async () => {
+  const q = (assistInput.value || '').trim(); if(!q) return;
+  addAssistUser(q);
+  assistInput.value = '';
+  addAssistBot('Searching…');
+
+  // attempt a wiki summary for the assist question, using current main title as context
+  try{
+    const mainTitle = document.getElementById('title').innerText || qEl.value || '';
+    // prefer querying "mainTitle q"
+    const query = (mainTitle ? (mainTitle + ' ' + q) : q);
+    const sum = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(query)).then(r=>r.json());
+    // remove last bot "Searching…" bubble
+    const bots = assistBody.querySelectorAll('.bubble.bot'); if(bots.length) bots[bots.length-1].remove();
+    if(sum.extract){
+      addAssistBot(sum.extract);
+    } else {
+      // fallback to searching q alone
+      const s2 = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q)).then(r=>r.json());
+      if(s2.extract) addAssistBot(s2.extract); else addAssistBot('No concise wiki result found. Try a different question.');
     }
   }catch(e){
-    // fallback: attempt a short reply using last search context
-    chatBody.querySelectorAll('.bot').forEach(n=>{ if(n.innerText==='Thinking...') n.remove(); });
-    // derive context from last main search result (if any)
-    const mainResult = document.querySelector('#result p') ? document.querySelector('#result p').innerText : '';
-    if(mainResult){
-      addBotMessage('I had trouble reaching the wiki service—here is what I recently found: ' + (mainResult.substring(0,300)) );
-    } else {
-      addBotMessage('Sorry — network or service error. Try again in a bit or try a different question.');
-    }
     console.error(e);
+    addAssistBot('Network or service error while fetching assistant info.');
   }
-}
+});
 
-function clearChat(){ chatHistory = []; chatBody.innerHTML = ''; addBotMessage('Hello! Ask me anything about the universe. Try: "What is a pen?"'); }
+function addAssistBot(text){ const d = document.createElement('div'); d.className = 'bubble bot'; d.innerText = text; assistBody.appendChild(d); assistBody.scrollTop = assistBody.scrollHeight; }
+function addAssistUser(text){ const d = document.createElement('div'); d.className = 'bubble user'; d.innerText = text; assistBody.appendChild(d); assistBody.scrollTop = assistBody.scrollHeight; }
+function clearAssist(){ assistBody.innerHTML = ''; addAssistBot('Hello — ask me about any brand, company, or object. Example: "Tell me about JBL"'); }
+clearAssist();
 
-// initialize
-clearChat();
+/* ------------- Helpers: Enter key for assistant ------------- */
+assistInput.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ document.getElementById('assistAsk').click(); } });
 
-/* ---------- small helper: pressing Enter in chat/input ---------- */
-document.getElementById('chatInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); sendChat(); }});
-document.getElementById('search').addEventListener('keydown', function(e){ if(e.key==='Enter'){ playClick(); searchItem(); }});
+/* ------------- initial demo text ------------- */
+(function demo(){
+  // optional: prefill example
+  // qEl.value = 'JBL';
+  // runSearch();
+})();
+
 </script>
 </body>
 </html>
+
